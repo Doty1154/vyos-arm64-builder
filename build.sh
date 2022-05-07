@@ -15,11 +15,13 @@ CONTAINER_NAME="vyos-arm64-libbpf"
 docker build -t "${CONTAINER_NAME}" vyos-build/docker/
 PKGBUILD_CONTAINER=$(docker create -it --privileged --entrypoint "/bin/bash" -v $(pwd):/tmp/vyos-build-arm64 "${CONTAINER_NAME}")
 docker start "${PKGBUILD_CONTAINER}"
-docker exec -i -t "${PKGBUILD_CONTAINER}" /bin/bash -c 'cd /tmp/vyos-build-arm64 && ./build-packages.sh && cd vyos-build && export VYOS_BUILD_FLAVOUR=generic-arm64 && export EMAIL=notmyemail@email.com && ./configure --build-by="${BUILD_BY}" --architecture "arm64" && make arm64'
-#docker stop "${PKGBUILD_CONTAINER}"
-#docker rm "${PKGBUILD_CONTAINER}"
+docker exec -i -t "${PKGBUILD_CONTAINER}" /bin/bash -c 'cd /tmp/vyos-build-arm64 && ./build-packages.sh'
+#To build inside a docker container
+#docker exec -i -t "${PKGBUILD_CONTAINER}" /bin/bash -c 'cd /tmp/vyos-build-arm64 && ./build-packages.sh && cd vyos-build && export VYOS_BUILD_FLAVOUR=generic-arm64 && export EMAIL=notmyemail@email.com && ./configure --build-by="${BUILD_BY}" --architecture "arm64" && make arm64'
+docker stop "${PKGBUILD_CONTAINER}"
+docker rm "${PKGBUILD_CONTAINER}"
 
-#cd vyos-build
-#export VYOS_BUILD_FLAVOUR=generic-arm64
-#./configure --build-by="${BUILD_BY}" --architecture "arm64"
-#make arm64
+cd vyos-build
+export VYOS_BUILD_FLAVOUR=generic-arm64
+./configure --build-by="${BUILD_BY}" --architecture "arm64"
+make arm64
