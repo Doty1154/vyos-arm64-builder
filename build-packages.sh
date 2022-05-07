@@ -9,7 +9,6 @@ if [ ! -d "vyos-build" ]; then
 	echo "ERROR: No vyos-build found"
 	pwd
 	ls -la .
-	exit 1
 	git clone https://github.com/Doty1154/vyos-build
 fi
 
