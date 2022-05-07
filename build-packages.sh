@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 BASEDIR=$(dirname $(readlink -f "$0"))
-sudo apt-get install -y clang llvm libpcap-dev xz-utils python-is-python3
+sudo apt-get install -y kpartx make live-build pbuilder devscripts python3-pystache python3-git python3-setuptools parted dosfstools squashfs-tools clang llvm libpcap-dev xz-utils python-is-python3 opam pkg-config qemu qemu-system
 # Do linux kernel first as we need our kernel headers
 # for XDP
 pwd
@@ -10,7 +10,7 @@ if [ ! -d "vyos-build" ]; then
 	pwd
 	ls -la .
 	exit 1
-	git clone https://github.com/vyos/vyos-build
+	git clone https://github.com/Doty1154/vyos-build
 fi
 
 cd vyos-build/packages/linux-kernel
@@ -32,17 +32,21 @@ dpkg -i ../linux-libc-dev*.deb
 
 ln -s /usr/include/aarch64-linux-gnu/asm /usr/include/asm
 
+rm -rf accel-ppp
 git clone https://github.com/accel-ppp/accel-ppp.git
 git -C accel-ppp checkout 51bd8165bb335a8db966c4df344810e7ef2c563c
+
 ./build-accel-ppp.sh
 cp accel-ppp*.deb ..
 
+rm -rf libyang
 git clone --branch "v2.0.97" https://github.com/CESNET/libyang.git
 cd libyang && apkg build -i && \
 	find pkg/pkgs -type f -name *.deb -exec mv -t .. {} + && \
 	cd ..
 
 cd ../frr/
+rm -rf frr
 git clone --branch "stable/8.1" https://github.com/FRRouting/frr.git
 ./build-frr.sh
 cp frr*.deb ..
